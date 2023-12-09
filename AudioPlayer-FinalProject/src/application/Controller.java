@@ -108,12 +108,14 @@ public class Controller implements Initializable {
             stage.close();
         }
         
-        
+    //minimizes the application using drop down    
         private void minimizeApp() {
 
         	 ((Stage) optionsDrop.getScene().getWindow()).setIconified(true);
 
         }
+        
+       
         private void openFolder() {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Select Folder");
@@ -209,15 +211,21 @@ else {
 }
     }
 
-    //fxml method that handles playing the song
+  //fxml method that handles playing the song
     @FXML
     void playMedia() {
-    	beginTimer();
-    	mediaPlayer.play();
-    	mediaPlayer.setVolume(volSlider.getValue() * 0.01);
-        songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
+        beginTimer();
+        mediaPlayer.play();
+        mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+
+        // updates song name using regular expressions in order to remove file extension from song name. 
+        //uses commonly known audio extensions (or whatever I found off google)
+        String songName = songs.get(songNumber).getName();
+        songName = songName.replaceAll("\\.(mp3|wav|m4a|flac|ogg|aac|wma|aiff|alac|opus)$", "");
+
+        songLabel.setText("Now Playing: " + songName);
     }
-    
+
 //fxml method that handles pausing the song
     @FXML
     void pauseMedia() {
@@ -240,10 +248,10 @@ else {
                 System.out.println(current / end);
                 songProgressBar.setProgress(current / end);
                 
-                //if song ends then auto play next soin
+                //if song ends then auto play next song
                 if (current / end == 1) {
                     cancelTimer();
-                    Platform.runLater(() -> { // Ensure UI updates on the JavaFX Application Thread
+                    Platform.runLater(() -> { //Makes sure the UI updates on the JavaFX application thread as changing folders causes thread to be lost
                         nextMedia(); // Call nextMedia on the JavaFX Application Thread
                     });
                 }
@@ -335,6 +343,8 @@ else {
             }
         });
 
+        //runs recursive method with path of test folder to check for file/directory path errors/problems
+        printDirectoryStructure(new File("Music Playlist Test"));
         
         //custom background color for menu, vol slider, and progress bar (sets to pink)
         optionsDrop.setStyle("-fx-control-inner-background: #ff0092");
