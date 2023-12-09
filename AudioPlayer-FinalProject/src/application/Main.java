@@ -3,6 +3,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -65,35 +66,42 @@ public class Main extends Application {
     
     //method to handle snapping feature
     private void snapToEdge(Stage stage) {
-        Screen screen = Screen.getPrimary();
-        double screenWidth = screen.getBounds().getWidth();
-        double screenHeight = screen.getBounds().getHeight();
-
         double windowWidth = stage.getWidth();
         double windowHeight = stage.getHeight();
 
-        //define the snapping margin (e.g., 10 pixels)
-        //i.e how far away the window must be from the edge of the screen in order to snap to it
+        //define the snapping margin (e.g., 40 pixels)
         double snapMargin = 40;
 
-        //check if the window is close to the left edge
-        if (stage.getX() < snapMargin) {
-            stage.setX(0);
-        }
+        //iterates through all screens
+        for (Screen screen : Screen.getScreens()) {
+            Rectangle2D screenBounds = screen.getBounds();
 
-        //check if the window is close to the right edge
-        if (stage.getX() + windowWidth > screenWidth - snapMargin) {
-            stage.setX(screenWidth - windowWidth);
-        }
+            //check if the window's bounds intersect with the current screen's bounds (i.e if the window is against the edge of another monitor)
+            if (screenBounds.intersects(stage.getX(), stage.getY(), windowWidth, windowHeight)) {
+               
+            	//check if the window is close to the left edge
+                if (stage.getX() < screenBounds.getMinX() + snapMargin) {
+                    stage.setX(screenBounds.getMinX());
+                }
 
-        //check if the window is close to the top edge
-        if (stage.getY() < snapMargin) {
-            stage.setY(0);
-        }
+                //check if the window is close to the right edge
+                if (stage.getX() + windowWidth > screenBounds.getMaxX() - snapMargin) {
+                    stage.setX(screenBounds.getMaxX() - windowWidth);
+                }
 
-        //check if the window is close to the bottom edge
-        if (stage.getY() + windowHeight > screenHeight - snapMargin) {
-            stage.setY(screenHeight - windowHeight);
+                //check if the window is close to the top edge
+                if (stage.getY() < screenBounds.getMinY() + snapMargin) {
+                    stage.setY(screenBounds.getMinY());
+                }
+
+                //check if the window is close to the bottom edge
+                if (stage.getY() + windowHeight > screenBounds.getMaxY() - snapMargin) {
+                    stage.setY(screenBounds.getMaxY() - windowHeight);
+                }
+
+                //exit the loop once the current screen is found
+                break;
+            }
         }
     }
 

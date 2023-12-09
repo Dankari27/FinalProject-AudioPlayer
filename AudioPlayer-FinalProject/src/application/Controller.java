@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -29,214 +28,201 @@ import java.util.TimerTask;
 
 public class Controller implements Initializable {
 
-	
-	@FXML 
-	private Pane pane;
-	
-	@FXML
-	private Label songLabel;
-  
+    @FXML
+    private Pane pane;
+
+    @FXML
+    private Label songLabel;
+
     @FXML
     private Button nextButton, pauseButton, playButton, prevButton;
 
     @FXML
     private Slider volSlider;
-    
+
     @FXML
     private ProgressBar songProgressBar;
-    
+
     @FXML
     private ComboBox<String> speedBox;
-    
+
     @FXML
     private ComboBox<String> optionsDrop;
-    	
-    private File directory;
-    
+
     private File[] files;
-    
     private ArrayList<File> songs;
 
     private int songNumber;
-    
+
     private int[] speeds = {25, 50, 75, 100, 125, 150, 175, 200};
-    
+
     private Timer timer;
     private TimerTask task;
     private boolean running;
-    
+
     private Media media;
     private MediaPlayer mediaPlayer = null;
 
-    @FXML
-    private ImageView background;
+    //variable to store the current playback speed
+    private double currentSpeed = 1.0;
 
-    
-    //change speed fxml method
+    //changes speed of song
     @FXML
     void changeSpeed(ActionEvent event) {
         if (mediaPlayer != null) {
-            mediaPlayer.setRate(Integer.parseInt(speedBox.getValue().substring(0, speedBox.getValue().length() - 1)) * 0.01);
+            currentSpeed = Integer.parseInt(speedBox.getValue().substring(0, speedBox.getValue().length() - 1)) * 0.01;
+            mediaPlayer.setRate(currentSpeed);
         } else {
             System.out.println("Media player is not initialized. No song is currently loaded.");
         }
     }
 
-    
-    //drop down fxml method
+    //options menu 
     @FXML
     void options(ActionEvent event) {
         String selectedOption = optionsDrop.getValue();
 
         if ("Open Folder".equals(selectedOption)) {
             openFolder();
-        }if ("Quit".equals(selectedOption)) {
+        } if ("Quit".equals(selectedOption)) {
             quitApplication();
-            }
-        if ("Minimize".equals(selectedOption)) {
-        	minimizeApp();
+        } if ("Minimize".equals(selectedOption)) {
+            minimizeApp();
         } else {
-            //Handle default case or do nothing
+            // Handle default case or do nothing
         }
-        
+
         optionsDrop.setValue(null);
     }
-     
-    //quits the application using drop down
-        private void quitApplication() {
-        	Stage stage = (Stage) optionsDrop.getScene().getWindow();
-            stage.close();
-        }
-        
-    //minimizes the application using drop down    
-        private void minimizeApp() {
+    
+    //method to quit application
+    private void quitApplication() {
+        Stage stage = (Stage) optionsDrop.getScene().getWindow();
+        stage.close();
+    }
+    
+    //method to minimize application
+    private void minimizeApp() {
+        ((Stage) optionsDrop.getScene().getWindow()).setIconified(true);
+    }
+    
+    //deals with file input/output when selecting custom song folder
+    private void openFolder() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Folder");
 
-        	 ((Stage) optionsDrop.getScene().getWindow()).setIconified(true);
+        //shows the directory chooser dialog
+        Stage stage = (Stage) optionsDrop.getScene().getWindow();
+        File selectedDirectory = directoryChooser.showDialog(stage);
 
-        }
-        
-       
-        private void openFolder() {
-            DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Select Folder");
+        //handles the selected directory
+        if (selectedDirectory != null) {
+            System.out.println("Selected folder: " + selectedDirectory.getAbsolutePath());
 
-            // Show the directory chooser dialog
-            Stage stage = (Stage) optionsDrop.getScene().getWindow();
-            File selectedDirectory = directoryChooser.showDialog(stage);
+            //load songs from the selected directory
+            loadSongs(selectedDirectory);
 
-            // Handle the selected directory
-            if (selectedDirectory != null) {
-                System.out.println("Selected folder: " + selectedDirectory.getAbsolutePath());
+            //stop the current media player if it's playing
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer = null; //set mediaPlayer to null after stopping
+            }
 
-                // Load songs from the selected directory
-                loadSongs(selectedDirectory);
+            //set default speed to 100%
+            speedBox.setValue("100%");
 
-                // Stop the current media player if it's playing
-                if (mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer = null; // Set mediaPlayer to null after stopping
-                }
+            //update the files array
+            files = selectedDirectory.listFiles();
 
-                // Set default speed to 100%
-                speedBox.setValue("100%");
+            //check if there are songs in the new directory
+            if (!songs.isEmpty()) {
+                songNumber = 0;
+                media = new Media(songs.get(songNumber).toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
+                playMedia();
+            } else {
+                //handle case where no songs are found in the selected directory
+                System.out.println("No songs found in the selected folder.");
 
-                // Update the files array
-                files = selectedDirectory.listFiles();
+                //display an alert to the user
+                showAlert("Empty Folder", "Please select a folder with at least one file.");
 
-                // Check if there are songs in the new directory
-                if (!songs.isEmpty()) {
-                    songNumber = 0;
-                    media = new Media(songs.get(songNumber).toURI().toString());
-                    mediaPlayer = new MediaPlayer(media);
-                    songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
-                    playMedia();
-                } else {
-                    // Handle case where no songs are found in the selected directory
-                    System.out.println("No songs found in the selected folder.");
-
-                    // Display an alert to the user
-                    showAlert("Empty Folder", "Please select a folder with at least one file.");
-
-                    // Stop the timer and reset UI elements
-                    cancelTimer();
-                    songProgressBar.setProgress(0);
-                    songLabel.setText("Now Playing: ");
-                }
+                //stop the timer and reset UI elements
+                cancelTimer();
+                songProgressBar.setProgress(0);
+                songLabel.setText("Now Playing: ");
             }
         }
-     // Method to show an alert
-        private void showAlert(String title, String content) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(content);
-
-            // Use Platform.runLater to execute the clearing action on the JavaFX Application Thread
-            alert.setOnHidden(e -> {
-                Platform.runLater(() -> {
-                    optionsDrop.getSelectionModel().clearSelection();
-                });
-            });
-
-            alert.showAndWait();
-        }
-
-
-        
-        //fxml method which handles skipping the current song
-    @FXML
-    void nextMedia() {
-if(songNumber < songs.size() - 1) { //checks size of selected playlist
-	songNumber++;
-	mediaPlayer.stop();
-	if(running) {
-		cancelTimer();
-	}
-    media = new Media(songs.get(songNumber).toURI().toString()); 
-    mediaPlayer = new MediaPlayer(media);
-    songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
-    playMedia();
-}
-else {
-	songNumber = 0;
-	mediaPlayer.stop();
-	
-	if(running) {
-		cancelTimer();
-	}
-    media = new Media(songs.get(songNumber).toURI().toString());
-    mediaPlayer = new MediaPlayer(media);
-    songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
-    playMedia();
-}
     }
 
-  //fxml method that handles playing the song
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        //uses Platform.runLater to execute the clearing action on the JavaFX Application Thread
+        //prevents bug regarding the focus for the drop menu
+        alert.setOnHidden(e -> {
+            Platform.runLater(() -> {
+                optionsDrop.getSelectionModel().clearSelection();
+            });
+        });
+
+        alert.showAndWait();
+    }
+    
+    //next song method
+    @FXML
+    void nextMedia() {
+        if (songNumber < songs.size() - 1) {
+            songNumber++;
+        } else {
+            songNumber = 0;
+        }
+        playSelectedMedia();
+    }
+    
+   //plays song
     @FXML
     void playMedia() {
         beginTimer();
         mediaPlayer.play();
         mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+        mediaPlayer.setRate(currentSpeed); // Set the speed
 
-        // updates song name using regular expressions in order to remove file extension from song name. 
-        //uses commonly known audio extensions (or whatever I found off google)
         String songName = songs.get(songNumber).getName();
         songName = songName.replaceAll("\\.(mp3|wav|m4a|flac|ogg|aac|wma|aiff|alac|opus)$", "");
 
         songLabel.setText("Now Playing: " + songName);
+
+  
     }
 
-//fxml method that handles pausing the song
-    @FXML
-    void pauseMedia() {
-    	cancelTimer();
-    	mediaPlayer.pause();
+    //plays selected song (custom)
+    private void playSelectedMedia() {
+        mediaPlayer.stop();
+
+        if (running) {
+            cancelTimer();
+        }
+
+        media = new Media(songs.get(songNumber).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setRate(currentSpeed); // Set the speed
+        songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
+        playMedia();
     }
     
-    
-    
-    //fxml method that creates a timer and displays progress bar
+    //method to handle pausing
     @FXML
+    void pauseMedia() {
+        cancelTimer();
+        mediaPlayer.pause();
+    }
+    
+    //method to handle timer for progress bar fill
     private void beginTimer() {
         timer = new Timer();
         task = new TimerTask() {
@@ -247,12 +233,11 @@ else {
                 double end = media.getDuration().toSeconds();
                 System.out.println(current / end);
                 songProgressBar.setProgress(current / end);
-                
-                //if song ends then auto play next song
+
                 if (current / end == 1) {
                     cancelTimer();
-                    Platform.runLater(() -> { //Makes sure the UI updates on the JavaFX application thread as changing folders causes thread to be lost
-                        nextMedia(); // Call nextMedia on the JavaFX Application Thread
+                    Platform.runLater(() -> {
+                        nextMedia();
                     });
                 }
             }
@@ -260,58 +245,30 @@ else {
 
         timer.scheduleAtFixedRate(task, 0, 1000);
     }
-
     
-    //fxml method to hand timer cancellation to reset timer
-    @FXML
+    //method to cancel timer for when song ends
     public void cancelTimer() {
-    	running = false;
-    	timer.cancel();
+        running = false;
+        timer.cancel();
     }
-
-    //fxml method that skips to previous song
+    
+    //plays previous song
     @FXML
     void prevMedia() {
-    	if(songNumber > 0) {
-    		songNumber--;
-    		mediaPlayer.stop();
-    		
-    		if(running) {
-    			cancelTimer();
-    		}
-    		
-    	    media = new Media(songs.get(songNumber).toURI().toString());
-    	    mediaPlayer = new MediaPlayer(media);
-    	    songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
-    	    playMedia();
-    	}
-    	else {
-    		songNumber = songs.size() - 1;
-    		mediaPlayer.stop();
-    		
-    		if(running) {
-    			cancelTimer();
-    		}
-    	    media = new Media(songs.get(songNumber).toURI().toString());
-    	    mediaPlayer = new MediaPlayer(media);
-    	    songLabel.setText("Now Playing: " + songs.get(songNumber).getName());
-    	    playMedia();
-    	}
+        if (songNumber > 0) {
+            songNumber--;
+        } else {
+            songNumber = songs.size() - 1;
+        }
+        playSelectedMedia();
     }
 
-    //main method that initializes during program startup
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-    	
         // creates arraylist to store songs
         songs = new ArrayList<>();
 
         mediaPlayer = null;
-        // sets default directory
-        // directory = new File("music");
-
-        // location to load files from
-        // files = directory.listFiles();
 
         // if the files are not null, add them to the songs list
         if (files != null) {
@@ -321,20 +278,14 @@ else {
             }
         }
 
-        // change speed multiplier
         for (int i = 0; i < speeds.length; i++) {
             speedBox.getItems().add(Integer.toString(speeds[i]) + "%");
         }
-        // on action event for changing speed
         speedBox.setOnAction(this::changeSpeed);
 
-        // adds options to drop down
         optionsDrop.getItems().addAll("Open Folder", "Minimize", "Quit");
 
-        // volume adjustment
         volSlider.valueProperty().addListener(new ChangeListener<Number>() {
-
-            // volume adjustment behaviour
             @Override
             public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
                 if (mediaPlayer != null) {
@@ -343,21 +294,18 @@ else {
             }
         });
 
-        //runs recursive method with path of test folder to check for file/directory path errors/problems
         printDirectoryStructure(new File("Music Playlist Test"));
         
-        //custom background color for menu, vol slider, and progress bar (sets to pink)
+        //sets styles for prog bar, drop down menus, and vol slider
         optionsDrop.setStyle("-fx-control-inner-background: #ff0092");
         songProgressBar.setStyle("-fx-control-inner-background: #ff0092");
 
         volSlider.setStyle("-fx-control-inner-background: #ff0092");
 
         speedBox.setStyle("-fx-control-inner-background: #ff0092");
-
-    
     }
-    
-    //Recursive method to print directory folder files and sub-directory files for testing purposes. 
+
+    //recursive method that shows file path and directory path for testing purposes
     private void printDirectoryStructure(File directory) {
         printDirectoryStructureHelper(directory, 0);
     }
@@ -365,7 +313,7 @@ else {
     private void printDirectoryStructureHelper(File file, int depth) {
         StringBuilder indentation = new StringBuilder();
         for (int i = 0; i < depth; i++) {
-            indentation.append("  "); 
+            indentation.append("  ");
         }
 
         System.out.println(indentation + file.getName());
@@ -380,9 +328,8 @@ else {
         }
     }
 
-    //custom song folder method 
     private void loadSongs(File directory) {
-        songs.clear(); // Clear the existing song list
+        songs.clear();
         File[] files = directory.listFiles();
 
         if (files != null) {
@@ -392,5 +339,4 @@ else {
             }
         }
     }
-
 }
