@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.effect.ImageInput?>
+<?import javafx.scene.effect.Reflection?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<!-- Root container for the UI layout -->
+
+<AnchorPane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="167.0" prefWidth="600.0" stylesheets="@application/application.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+
+   <!-- UI components within the AnchorPane -->
+   <children>
+      <ImageView id="pane" fx:id="background" fitHeight="176.0" fitWidth="606.0" layoutX="-5.0" layoutY="-7.0" styleClass="bl.fxml">
+         <image>
+            <Image url="@../images/bk.jpg" />
+         </image>
+      </ImageView>
+      <ProgressBar fx:id="songProgressBar" layoutX="43.0" layoutY="89.0" opacity="0.76" prefHeight="18.0" prefWidth="513.0" progress="0.0">
+         <effect>
+            <Reflection bottomOpacity="0.04" fraction="0.83" topOpacity="0.46" />
+         </effect></ProgressBar>
+      <Button fx:id="playButton" layoutX="67.0" layoutY="107.0" mnemonicParsing="false" onAction="#playMedia" prefHeight="47.0" prefWidth="53.0" text="Play">
+         <effect>
+            <ImageInput>
+               <source>
+                  <Image url="file:/C:/Users/Darkl/git/repository/GuessingGame/images/icons8-circled-play-50.png" />
+               </source>
+            </ImageInput>
+         </effect></Button>
+      <Button fx:id="pauseButton" layoutX="136.0" layoutY="107.0" mnemonicParsing="false" onAction="#pauseMedia" prefHeight="47.0" prefWidth="53.0" text="Pause">
+         <effect>
+            <ImageInput>
+               <source>
+                  <Image url="file:/C:/Users/Darkl/git/repository/GuessingGame/images/icons8-pause-squared-50.png" />
+               </source>
+            </ImageInput>
+         </effect></Button>
+      <Button fx:id="prevButton" layoutX="318.0" layoutY="107.0" mnemonicParsing="false" onAction="#prevMedia" prefHeight="47.0" prefWidth="53.0" text="Previous">
+         <effect>
+            <ImageInput>
+               <source>
+                  <Image url="file:/C:/Users/Darkl/git/repository/GuessingGame/images/icons8-rewind-button-round-50.png" />
+               </source>
+            </ImageInput>
+         </effect></Button>
+      <Button fx:id="nextButton" layoutX="386.0" layoutY="107.0" mnemonicParsing="false" onAction="#nextMedia" prefHeight="47.0" prefWidth="53.0" text="Next">
+         <effect>
+            <ImageInput>
+               <source>
+                  <Image url="file:/C:/Users/Darkl/git/repository/GuessingGame/images/icons8-fast-forward-round-50.png" />
+               </source>
+            </ImageInput>
+         </effect></Button>
+      <Slider fx:id="volSlider" layoutX="439.0" layoutY="123.0" max="100.00" value="50.00" />
+      <Label fx:id="songLabel" alignment="CENTER" layoutX="4.0" layoutY="36.0" prefHeight="36.0" prefWidth="592.0" text="Now Playing:" textFill="#00ffe5f5">
+         <font>
+            <Font name="Cabin Sketch Regular" size="36.0" />
+         </font>
+         <effect>
+            <Reflection fraction="0.61" topOffset="-10.0" topOpacity="0.39" />
+         </effect>
+      </Label>
+      <ComboBox fx:id="speedBox" layoutX="227.0" layoutY="107.0" onAction="#changeSpeed" prefHeight="47.0" prefWidth="50.0" promptText="Speed">
+         <effect>
+            <ImageInput>
+               <source>
+                  <Image url="file:/C:/Users/Darkl/git/repository/GuessingGame/images/icons8-circled-play-50%20-%20Copy.png" />
+               </source>
+            </ImageInput>
+         </effect></ComboBox>
+      <ComboBox fx:id="optionsDrop" layoutX="4.0" onAction="#options" prefHeight="47.0" prefWidth="50.0" promptText="Options">
+         <effect>
+            <ImageInput>
+               <source>
+                  <Image url="file:/C:/Users/Darkl/git/repository/GuessingGame/images/icons8-menu-64.png" />
+               </source>
+            </ImageInput>
+         </effect>
+      </ComboBox>
+   </children>
+</AnchorPane>
