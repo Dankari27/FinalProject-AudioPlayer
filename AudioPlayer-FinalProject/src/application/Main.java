@@ -8,8 +8,6 @@ import javafx.stage.StageStyle;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.paint.Color;
 
 // The main class that extends Application, required for JavaFX applications
 public class Main extends Application {

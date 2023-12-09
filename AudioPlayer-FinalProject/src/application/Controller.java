@@ -13,7 +13,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -73,7 +72,7 @@ public class Controller implements Initializable {
     private ImageView background;
 
     
-
+    //change speed fxml method
     @FXML
     void changeSpeed(ActionEvent event) {
         if (mediaPlayer != null) {
@@ -97,7 +96,7 @@ public class Controller implements Initializable {
         if ("Minimize".equals(selectedOption)) {
         	minimizeApp();
         } else {
-            // Handle default case or do nothing
+            //Handle default case or do nothing
         }
         
         optionsDrop.setValue(null);
@@ -109,7 +108,6 @@ public class Controller implements Initializable {
             stage.close();
         }
         
-        ////TO DO: Create settings menu and add misc settings such as audio device output and custom themes
         
         private void minimizeApp() {
 
@@ -337,9 +335,9 @@ else {
             }
         });
 
-        // sets custom styles
+        
+        //custom background color for menu, vol slider, and progress bar (sets to pink)
         optionsDrop.setStyle("-fx-control-inner-background: #ff0092");
-        songProgressBar.setStyle("-fx-accent: pink");
         songProgressBar.setStyle("-fx-control-inner-background: #ff0092");
 
         volSlider.setStyle("-fx-control-inner-background: #ff0092");
@@ -349,7 +347,7 @@ else {
     
     }
     
-    //Recursive method to print directory folder files and subdirectory files for testing purposes. 
+    //Recursive method to print directory folder files and sub-directory files for testing purposes. 
     private void printDirectoryStructure(File directory) {
         printDirectoryStructureHelper(directory, 0);
     }

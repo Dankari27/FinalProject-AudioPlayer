@@ -24,37 +24,37 @@
 		<link>
 			<name>images/Menu.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/Menu.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/Menu.png</location>
 		</link>
 		<link>
 			<name>images/Next.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/Next.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/Next.png</location>
 		</link>
 		<link>
 			<name>images/Pause.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/Pause.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/Pause.png</location>
 		</link>
 		<link>
 			<name>images/Play.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/Play.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/Play.png</location>
 		</link>
 		<link>
 			<name>images/Previous.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/Previous.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/Previous.png</location>
 		</link>
 		<link>
 			<name>images/dropMenu.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/dropMenu.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/dropMenu.png</location>
 		</link>
 		<link>
 			<name>images/icon.png</name>
 			<type>1</type>
-			<location>C:/Users/Darkl/workspace/AudioPlayer-FinalProject/images/icon.png</location>
+			<location>C:/Users/Darkl/git/final_project_Repo/AudioPlayer-FinalProject/images/icon.png</location>
 		</link>
 	</linkedResources>
 </projectDescription>
